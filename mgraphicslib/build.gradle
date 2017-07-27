@@ -2,6 +2,10 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.artifactory'
 apply plugin: 'maven-publish'
 
+def libraryGroupId = 'com.threeDBJ.MGraphicsLib'
+def libraryArtifactId = 'mgraphicslib'
+def libraryVersion = '1.0.1'
+
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.0"
@@ -9,12 +13,12 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName libraryVersion
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
-            moduleName "com.threeDBJ.MGraphicsLib.Mat4"
+            moduleName "com.threeDBJ.MGraphicsLib.math.Mat4"
         }
     }
 
@@ -30,10 +34,6 @@ android {
         }
     }
 }
-
-def libraryGroupId = 'com.threeDBJ.MGraphicsLib'
-def libraryArtifactId = 'mgraphicslib'
-def libraryVersion = '1.0'
 
 publishing {
     publications {

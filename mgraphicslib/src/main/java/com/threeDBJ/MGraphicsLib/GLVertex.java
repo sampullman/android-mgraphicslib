@@ -1,24 +1,8 @@
-/*
- * Copyright (C) 2008 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.threeDBJ.MGraphicsLib;
 
-import android.util.Log;
+import com.threeDBJ.MGraphicsLib.math.Mat4;
+import com.threeDBJ.MGraphicsLib.math.Vec3;
 
-import java.nio.IntBuffer;
 import java.nio.FloatBuffer;
 
 public class GLVertex extends Vec3 {
@@ -34,11 +18,11 @@ public class GLVertex extends Vec3 {
     }
 
     public GLVertex(GLVertex v) {
-	this.x = v.x;
-	this.y = v.y;
-	this.z = v.z;
-	this.index = v.index;
-	//this.color = v.color;
+        this.x = v.x;
+        this.y = v.y;
+        this.z = v.z;
+        this.index = v.index;
+        //this.color = v.color;
     }
 
     public GLVertex(float x, float y, float z) {
@@ -52,13 +36,13 @@ public class GLVertex extends Vec3 {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.index = (short)index;
+        this.index = (short) index;
     }
 
     @Override
     public boolean equals(Object other) {
         if (other instanceof GLVertex) {
-            GLVertex v = (GLVertex)other;
+            GLVertex v = (GLVertex) other;
             return (x == v.x && y == v.y && z == v.z);
         }
         return false;
@@ -92,35 +76,35 @@ public class GLVertex extends Vec3 {
     public void update(FloatBuffer vertexBuffer, Mat4 transform) {
         // skip to location of vertex in mVertex buffer
         if (transform == null) {
-	    vertexBuffer.position(index * 3);
+            vertexBuffer.position(index * 3);
             vertexBuffer.put(toFixed(x));
             vertexBuffer.put(toFixed(y));
             vertexBuffer.put(toFixed(z));
         } else {
-	    int ind = index*3;
+            int ind = index * 3;
             GLVertex temp = new GLVertex(this);
-	    //mul(transform);
-	    //temp.mul(transInv);
-	    temp.mul(transform);
-	    //temp.mul(trans);
+            //mul(transform);
+            //temp.mul(transInv);
+            temp.mul(transform);
+            //temp.mul(trans);
             vertexBuffer.put(ind, toFixed(temp.x));
-            vertexBuffer.put(ind+1, toFixed(temp.y));
-            vertexBuffer.put(ind+2, toFixed(temp.z));
+            vertexBuffer.put(ind + 1, toFixed(temp.y));
+            vertexBuffer.put(ind + 2, toFixed(temp.z));
         }
 
     }
 
     public void translate(FloatBuffer vertexBuffer, float x, float y, float z) {
-	this.x += x;
-	this.y += y;
-	this.z += z;
-	int ind = index*3;
-	vertexBuffer.put(ind, toFixed(this.x));
-	vertexBuffer.put(ind+1, toFixed(this.y));
-	vertexBuffer.put(ind+2, toFixed(this.z));
+        this.x += x;
+        this.y += y;
+        this.z += z;
+        int ind = index * 3;
+        vertexBuffer.put(ind, toFixed(this.x));
+        vertexBuffer.put(ind + 1, toFixed(this.y));
+        vertexBuffer.put(ind + 2, toFixed(this.z));
     }
 
     public String toString() {
-	return x + " "+y+" "+z;
+        return x + " " + y + " " + z;
     }
 }

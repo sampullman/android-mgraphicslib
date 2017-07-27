@@ -1,1 +1,1 @@
-include ':mgraphicslib'
+include ':mgraphicslib', ':app'

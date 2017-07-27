@@ -18,7 +18,7 @@ package com.threeDBJ.MGraphicsLib;
 
 public class GLColor {
 
-    public static final double THRESH=0.01;
+    public static final double THRESH = 0.01;
 
     float red, green, blue, alpha;
 
@@ -37,16 +37,16 @@ public class GLColor {
     }
 
     public GLColor(GLColor color) {
-	this.red = color.red;
-	this.green = color.green;
-	this.blue = color.blue;
-	this.alpha = color.alpha;
+        this.red = color.red;
+        this.green = color.green;
+        this.blue = color.blue;
+        this.alpha = color.alpha;
     }
 
     @Override
     public boolean equals(Object other) {
         if (other instanceof GLColor) {
-            GLColor color = (GLColor)other;
+            GLColor color = (GLColor) other;
             return (closeEnough(red, color.red) &&
                     closeEnough(green, color.green) &&
                     closeEnough(blue, color.blue) &&
@@ -60,6 +60,6 @@ public class GLColor {
     }
 
     public String toString() {
-	return "[ "+alpha+" "+red+" "+green+" "+blue+" ]";
+        return "[ " + alpha + " " + red + " " + green + " " + blue + " ]";
     }
 }

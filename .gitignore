@@ -15,6 +15,7 @@ resources/
 # Generated files
 bin/
 gen/
+.externalNativeBuild/
 
 # Gradle files
 .gradle/

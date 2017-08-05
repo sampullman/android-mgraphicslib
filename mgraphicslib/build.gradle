@@ -1,6 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.jfrog.artifactory'
-apply plugin: 'maven-publish'
 
 def libraryGroupId = 'com.threeDBJ.MGraphicsLib'
 def libraryArtifactId = 'mgraphicslib'
@@ -31,37 +29,6 @@ android {
     externalNativeBuild {
         ndkBuild {
             path 'src/main/jni/Android.mk'
-        }
-    }
-}
-
-publishing {
-    publications {
-        aar(MavenPublication) {
-            groupId libraryGroupId
-            version libraryVersion
-            artifactId libraryArtifactId
-
-            artifact("$buildDir/outputs/aar/${artifactId}-release.aar")
-        }
-    }
-}
-
-artifactory {
-    contextUrl = 'http://localhost:8081/artifactory'
-    publish {
-        repository {
-            repoKey = 'libs-release-local'
-
-            username = artifactory_username
-            password = artifactory_password
-        }
-        defaults {
-            publications('aar')
-            publishArtifacts = true
-
-            properties = ['qa.level': 'basic', 'q.os': 'android', 'dev.team': 'core']
-            publishPom = true
         }
     }
 }

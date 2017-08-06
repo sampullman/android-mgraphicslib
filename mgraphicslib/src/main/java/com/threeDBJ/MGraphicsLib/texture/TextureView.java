@@ -14,18 +14,18 @@ import javax.microedition.khronos.opengles.GL11;
 
 public class TextureView extends GLEnvironment implements Clickable {
 
-    ArrayList<TextureView> children = new ArrayList<TextureView>();
-    GLShape surface;
+    public interface TextureClickListener {
+        void onClick();
+    }
+
+    private ArrayList<TextureView> children = new ArrayList<>();
     float l, r, b, t, z, percentX, percentY, texRight, texTop;
-    GLVertex lb;
-    GLVertex lt;
-    GLVertex rt;
-    GLVertex rb;
+    GLVertex lb, lt, rt, rb;
     boolean visible = true;
-    TextureClickListener mListener;
+    TextureClickListener listener;
     boolean pressed = false;
 
-    TextureViewAnimation mAnimation;
+    private TextureViewAnimation animation;
 
     public TextureView() {
     }
@@ -36,9 +36,9 @@ public class TextureView extends GLEnvironment implements Clickable {
         this.b = b;
         this.t = t;
         this.z = z;
-        mVertexList.clear();
+        vertexList.clear();
         mShapeList.clear();
-        surface = new GLShape(this);
+        GLShape surface = new GLShape(this);
         rb = surface.addVertex(r, b, z);
         rt = surface.addVertex(r, t, z);
         lb = surface.addVertex(l, b, z);
@@ -46,7 +46,7 @@ public class TextureView extends GLEnvironment implements Clickable {
         GLFace f = new GLFace(rb, rt, lb, lt);
         f.setColor(c);
         surface.addFace(f);
-        surface.setTexture(mTexture);
+        surface.setTexture(texture);
         addShape(surface);
         generate();
     }
@@ -60,15 +60,15 @@ public class TextureView extends GLEnvironment implements Clickable {
 
     public void draw(GL11 gl) {
         super.draw(gl);
-        gl.glBindTexture(GL11.GL_TEXTURE_2D, mTexture.id);
-        mIndexBuffer.position(0);
-        mColorBuffer.position(0);
-        mVertexBuffer.position(0);
-        mTextureBuffer.position(0);
-        gl.glTexCoordPointer(2, GL11.GL_FLOAT, 0, mTextureBuffer);
-        gl.glVertexPointer(3, GL11.GL_FLOAT, 0, mVertexBuffer);
-        gl.glColorPointer(4, GL11.GL_FIXED, 0, mColorBuffer);
-        gl.glDrawElements(GL11.GL_TRIANGLES, mIndexCount, GL11.GL_UNSIGNED_SHORT, mIndexBuffer);
+        gl.glBindTexture(GL11.GL_TEXTURE_2D, texture.id);
+        indexBuffer.position(0);
+        colorBuffer.position(0);
+        vertexBuffer.position(0);
+        textureBuffer.position(0);
+        gl.glTexCoordPointer(2, GL11.GL_FLOAT, 0, textureBuffer);
+        gl.glVertexPointer(3, GL11.GL_FLOAT, 0, vertexBuffer);
+        gl.glColorPointer(4, GL11.GL_FIXED, 0, colorBuffer);
+        gl.glDrawElements(GL11.GL_TRIANGLES, indexCount, GL11.GL_UNSIGNED_SHORT, indexBuffer);
         for (TextureView child : children) {
             child.draw(gl);
         }
@@ -79,7 +79,7 @@ public class TextureView extends GLEnvironment implements Clickable {
     }
 
     public void setClickListener(TextureClickListener listener) {
-        mListener = listener;
+        this.listener = listener;
     }
 
     // public void setVisibility(boolean visible) {
@@ -99,7 +99,7 @@ public class TextureView extends GLEnvironment implements Clickable {
     }
 
     public void setAnimation(TextureViewAnimation animation) {
-        mAnimation = animation;
+        this.animation = animation;
         animation.addView(this);
         for (TextureView child : children) {
             child.setAnimation(animation);
@@ -107,14 +107,14 @@ public class TextureView extends GLEnvironment implements Clickable {
     }
 
     public void startAnimation() {
-        mAnimation.startAnimation();
+        animation.startAnimation();
     }
 
     public void animate() {
-        if (mAnimation != null) {
-            mAnimation.stepAnimation();
-            if (mAnimation.finished()) {
-                mAnimation = null;
+        if (animation != null) {
+            animation.stepAnimation();
+            if (animation.finished()) {
+                animation = null;
             }
         }
     }
@@ -128,9 +128,13 @@ public class TextureView extends GLEnvironment implements Clickable {
         b += y;
         t += y;
         texTop += y;
-        for (GLVertex v : mVertexList) {
-            v.translate(mVertexBuffer, x, y, z);
+        for (GLVertex v : vertexList) {
+            v.translate(vertexBuffer, x, y, z);
         }
+    }
+
+    void setPressed(boolean pressed) {
+        this.pressed = pressed;
     }
 
     public boolean touchHit(Vec2 p) {
@@ -142,7 +146,7 @@ public class TextureView extends GLEnvironment implements Clickable {
 
     public boolean handleActionDown(Vec2 p) {
         if (touchHit(p)) {
-            pressed = true;
+            setPressed(true);
             for (TextureView child : children) {
                 child.handleActionDown(p);
             }
@@ -164,13 +168,13 @@ public class TextureView extends GLEnvironment implements Clickable {
 
     public boolean handleActionUp(Vec2 p) {
         if (pressed) {
-            if (mListener != null && touchHit(p)) {
-                mListener.onClick();
+            if (listener != null && touchHit(p)) {
+                listener.onClick();
             }
             for (TextureView child : children) {
                 child.handleActionUp(p);
             }
-            pressed = false;
+            setPressed(false);
             return true;
         }
         return false;

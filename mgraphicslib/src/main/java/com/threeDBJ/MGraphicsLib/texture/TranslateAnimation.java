@@ -2,7 +2,7 @@ package com.threeDBJ.MGraphicsLib.texture;
 
 public class TranslateAnimation extends TextureViewAnimation {
 
-    float xStep, yStep, zStep;
+    private float xStep, yStep, zStep;
 
     public TranslateAnimation(int nSteps, float x, float y, float z) {
         super(nSteps);
@@ -13,7 +13,7 @@ public class TranslateAnimation extends TextureViewAnimation {
 
     public synchronized void stepAnimation() {
         super.stepAnimation();
-        for (TextureView view : mViews) {
+        for (TextureView view : views) {
             view.translate(xStep, yStep, zStep);
         }
     }

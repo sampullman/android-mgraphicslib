@@ -24,75 +24,67 @@ import javax.microedition.khronos.opengles.GL11;
 public abstract class GLEnvironment {
 
     public ArrayList<GLShape> mShapeList = new ArrayList<>();
-    public ArrayList<GLVertex> mVertexList = new ArrayList<>();
-    public Texture mTexture;
+    public ArrayList<GLVertex> vertexList = new ArrayList<>();
+    public Texture texture;
 
-    public int mIndexCount = 0;
+    public int indexCount = 0;
 
-    public FloatBuffer mVertexBuffer, mColorBuffer, mTextureBuffer;
-    public ShortBuffer mIndexBuffer;
+    public FloatBuffer vertexBuffer, colorBuffer, textureBuffer;
+    public ShortBuffer indexBuffer;
 
-    int w, h;
+    private int w, h;
     public float adjustWidth, adjustHeight, ratio;
 
-    boolean texturesEnabled = false;
+    private boolean texturesEnabled = false;
 
     public void clear() {
         mShapeList.clear();
-        mVertexList.clear();
-        mIndexCount = 0;
+        vertexList.clear();
+        indexCount = 0;
     }
 
     public void addShape(GLShape shape) {
         mShapeList.add(shape);
-        mIndexCount += shape.getIndexCount();
+        indexCount += shape.getIndexCount();
     }
 
     public GLVertex addVertex(float x, float y, float z) {
-        GLVertex vertex = new GLVertex(x, y, z, mVertexList.size());
-        mVertexList.add(vertex);
+        GLVertex vertex = new GLVertex(x, y, z, vertexList.size());
+        vertexList.add(vertex);
         return vertex;
     }
 
     public void transformVertex(GLVertex vertex, Mat4 transform) {
-        vertex.update(mVertexBuffer, transform);
+        vertex.update(vertexBuffer, transform);
+    }
+
+    private ByteBuffer genBuffer(int size) {
+        ByteBuffer bb = ByteBuffer.allocateDirect(size);
+        bb.order(ByteOrder.nativeOrder());
+        return bb;
     }
 
     public void genBuffers(int colorSize, int vertSize, int indSize, int texSize) {
-        ByteBuffer bb = ByteBuffer.allocateDirect(colorSize);
-        bb.order(ByteOrder.nativeOrder());
-        mColorBuffer = bb.asFloatBuffer();
 
-        bb = ByteBuffer.allocateDirect(vertSize);
-        bb.order(ByteOrder.nativeOrder());
-        mVertexBuffer = bb.asFloatBuffer();
-
-        bb = ByteBuffer.allocateDirect(indSize);
-        bb.order(ByteOrder.nativeOrder());
-        mIndexBuffer = bb.asShortBuffer();
-
-        bb = ByteBuffer.allocateDirect(texSize);
-        bb.order(ByteOrder.nativeOrder());
-        mTextureBuffer = bb.asFloatBuffer();
+        colorBuffer = genBuffer(colorSize).asFloatBuffer();
+        vertexBuffer = genBuffer(vertSize).asFloatBuffer();
+        indexBuffer = genBuffer(indSize).asShortBuffer();
+        textureBuffer = genBuffer(texSize).asFloatBuffer();
     }
 
     public void fillBuffers() {
-        Iterator<GLVertex> iter1 = mVertexList.iterator();
-        while (iter1.hasNext()) {
-            GLVertex vertex = iter1.next();
-            vertex.put(mVertexBuffer, mColorBuffer);
+        for(GLVertex vertex : vertexList) {
+            vertex.put(vertexBuffer, colorBuffer);
         }
 
-        Iterator<GLShape> iter2 = mShapeList.iterator();
-        while (iter2.hasNext()) {
-            GLShape shape = iter2.next();
-            shape.putIndices(mIndexBuffer);
-            shape.putTextures(mTextureBuffer);
+        for(GLShape shape : mShapeList) {
+            shape.putIndices(indexBuffer);
+            shape.putTextures(textureBuffer);
         }
     }
 
     public void generate() {
-        genBuffers(mVertexList.size() * 4 * 4, mVertexList.size() * 4 * 3, mIndexCount * 2, mVertexList.size() * 4 * 8);
+        genBuffers(vertexList.size() * 4 * 4, vertexList.size() * 4 * 3, indexCount * 2, vertexList.size() * 4 * 8);
         fillBuffers();
     }
 
@@ -113,8 +105,8 @@ public abstract class GLEnvironment {
     }
 
     public void setTexture(GL11 gl, Context c, int res) {
-        mTexture = new Texture(res);
-        loadTexture(gl, c, mTexture);
+        texture = new Texture(res);
+        loadTexture(gl, c, texture);
         enableTextures();
     }
 
@@ -137,7 +129,7 @@ public abstract class GLEnvironment {
     public static void loadTexture(GL11 gl, Context context, Texture t) {
         //Get the texture from the Android resource directory
         InputStream is = context.getResources().openRawResource(t.resource);
-        Bitmap bitmap = null;
+        Bitmap bitmap;
         try {
             //BitmapFactory is an Android graphics utility for images
             bitmap = BitmapFactory.decodeStream(is);
@@ -146,7 +138,6 @@ public abstract class GLEnvironment {
             //Always clear and close
             try {
                 is.close();
-                is = null;
             } catch (IOException e) {
             }
         }

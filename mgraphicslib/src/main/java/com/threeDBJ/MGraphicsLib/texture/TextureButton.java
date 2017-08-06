@@ -9,34 +9,35 @@ import javax.microedition.khronos.opengles.GL11;
 
 public class TextureButton extends TextureTextView {
 
-    Texture mNormalTexture, mPressedTexture;
+    private Texture normalTexture, pressedTexture;
 
     public TextureButton(TextureFont font) {
         super(font);
     }
 
     public void draw(GL11 gl) {
-        if (pressed) {
-            mTexture = mPressedTexture;
-        } else {
-            mTexture = mNormalTexture;
-        }
         super.draw(gl);
     }
 
     public void setPressedTexture(GL11 gl, Context c, int res) {
-        mPressedTexture = new Texture(res);
-        GLEnvironment.loadTexture(gl, c, mPressedTexture);
+        pressedTexture = new Texture(res);
+        GLEnvironment.loadTexture(gl, c, pressedTexture);
     }
 
     public void setTexture(GL11 gl, Context c, int res) {
         super.setTexture(gl, c, res);
-        mNormalTexture = mTexture;
+        normalTexture = texture;
+    }
+
+    @Override
+    void setPressed(boolean pressed) {
+        super.setPressed(pressed);
+        this.texture = pressed ? pressedTexture : normalTexture;
     }
 
     public boolean handleActionDown(Vec2 p) {
         if (touchHit(p)) {
-            pressed = true;
+            setPressed(true);
             return true;
         }
         return false;
@@ -45,7 +46,7 @@ public class TextureButton extends TextureTextView {
     public boolean handleActionMove(Vec2 p) {
         if (pressed) {
             if (!touchHit(p)) {
-                pressed = false;
+                setPressed(false);
             }
             return true;
         } else {
@@ -55,9 +56,9 @@ public class TextureButton extends TextureTextView {
 
     public boolean handleActionUp(Vec2 p) {
         if (pressed) {
-            pressed = false;
-            if (mListener != null && touchHit(p)) {
-                mListener.onClick();
+            setPressed(false);
+            if (listener != null && touchHit(p)) {
+                listener.onClick();
                 return true;
             }
         }

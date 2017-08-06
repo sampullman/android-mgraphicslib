@@ -10,6 +10,13 @@ public class Texture {
     public int height;
     public boolean loaded;
 
+    public float coords[] = {
+            //Mapping coordinates for the vertices
+            1.0f, 1.0f,
+            1.0f, 0.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f};
+
     public Texture() {
         reset();
     }
@@ -26,13 +33,6 @@ public class Texture {
         height = 0;
         loaded = false;
     }
-
-    public float coords[] = {
-            //Mapping coordinates for the vertices
-            1.0f, 1.0f,
-            1.0f, 0.0f,
-            0.0f, 1.0f,
-            0.0f, 0.0f};
 
     public void putCoords(FloatBuffer texBuffer) {
         texBuffer.put(coords);

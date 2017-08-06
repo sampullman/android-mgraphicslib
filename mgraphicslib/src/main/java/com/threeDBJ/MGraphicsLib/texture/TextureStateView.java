@@ -11,15 +11,15 @@ import javax.microedition.khronos.opengles.GL11;
 
 public class TextureStateView extends TextureView {
 
-    ArrayList<Texture> states = new ArrayList<Texture>();
-    int curState = 0;
+    private ArrayList<Texture> states = new ArrayList<>();
+    private int curState = 0;
 
     public boolean handleActionDown(Vec2 p) {
         if (touchHit(p)) {
             pressed = true;
             curState += 1;
             if (curState >= states.size()) curState = 0;
-            mTexture = states.get(curState);
+            texture = states.get(curState);
             return true;
         }
         return false;
@@ -30,7 +30,7 @@ public class TextureStateView extends TextureView {
         GLEnvironment.loadTexture(gl, c, t);
         states.add(t);
         if (states.size() == 1) {
-            mTexture = t;
+            texture = t;
             enableTextures();
         }
     }

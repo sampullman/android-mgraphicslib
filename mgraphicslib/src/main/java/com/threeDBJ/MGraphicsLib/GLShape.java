@@ -62,9 +62,7 @@ public class GLShape {
     }
 
     public void putIndices(ShortBuffer buffer) {
-        Iterator<GLFace> iter = faceList.iterator();
-        while (iter.hasNext()) {
-            GLFace face = iter.next();
+        for(GLFace face : faceList) {
             face.putIndices(buffer);
         }
     }
@@ -77,9 +75,7 @@ public class GLShape {
 
     public int getIndexCount() {
         int count = 0;
-        Iterator<GLFace> iter = faceList.iterator();
-        while (iter.hasNext()) {
-            GLFace face = iter.next();
+        for(GLFace face : faceList) {
             count += face.getIndexCount();
         }
         return count;
@@ -144,17 +140,20 @@ public class GLShape {
 
     @Override
     public boolean equals(Object o) {
-        GLShape s = (GLShape) o;
-        if (vertexList == s.vertexList) return true;
-        int len = vertexList.size();
-        if (len != s.vertexList.size()) return false;
-        for (int i = 0; i < len; i += 1) {
-            Vec3 v1 = vertexList.get(i);
-            Vec3 v2 = s.vertexList.get(i);
-            if (v1.x != v2.x || v1.y != v2.y || v1.z != v2.z)
-                return false;
+        if(o instanceof GLShape) {
+            GLShape s = (GLShape) o;
+            if (vertexList == s.vertexList) return true;
+            int len = vertexList.size();
+            if (len != s.vertexList.size()) return false;
+            for (int i = 0; i < len; i += 1) {
+                Vec3 v1 = vertexList.get(i);
+                Vec3 v2 = s.vertexList.get(i);
+                if (v1.x != v2.x || v1.y != v2.y || v1.z != v2.z)
+                    return false;
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
 }

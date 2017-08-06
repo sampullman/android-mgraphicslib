@@ -14,15 +14,19 @@ import javax.microedition.khronos.opengles.GL11;
 
 public class TextureSlider extends TextureView {
 
-    Texture mButtonTexture;
-    int btnIndexCount, colorStart, vertStart, indStart, texStart, vertListStart;
-    float btn_l, btn_r, btn_t, btn_b, w, h, step;
-    int prevInd = 0;
-    Vec2 prevTouch;
+    public interface OnValueChangedListener {
+        public void onValueChanged(Object value);
+    }
 
-    OnValueChangedListener mListener;
+    private Texture buttonTexture;
+    private int btnIndexCount, colorStart, vertStart, indStart, texStart, vertListStart;
+    private float btn_l, btn_r, btn_t, btn_b, w, h, step;
+    private int prevInd = 0;
+    private Vec2 prevTouch;
 
-    ArrayList values;
+    private OnValueChangedListener listener;
+
+    private ArrayList values;
 
     public TextureSlider(ArrayList values) {
         super();
@@ -31,8 +35,8 @@ public class TextureSlider extends TextureView {
 
     public void setTexture(GL11 gl, Context c, int sliderRes, int btnRes) {
         super.setTexture(gl, c, sliderRes);
-        mButtonTexture = new Texture(btnRes);
-        GLEnvironment.loadTexture(gl, c, mButtonTexture);
+        buttonTexture = new Texture(btnRes);
+        GLEnvironment.loadTexture(gl, c, buttonTexture);
     }
 
     public void setFace(float l, float r, float b, float t, float z, GLColor c) {
@@ -40,12 +44,12 @@ public class TextureSlider extends TextureView {
         w = r - l;
         h = t - b;
         step = w / (float) values.size();
-        colorStart = mColorBuffer.position();
-        vertStart = mVertexBuffer.position();
-        indStart = mIndexBuffer.position();
-        texStart = mTextureBuffer.position();
-        vertListStart = mVertexList.size();
-        int tempIndexCount = mIndexCount;
+        colorStart = colorBuffer.position();
+        vertStart = vertexBuffer.position();
+        indStart = indexBuffer.position();
+        texStart = textureBuffer.position();
+        vertListStart = vertexList.size();
+        int tempIndexCount = indexCount;
         z += 0.02;
         float h = (t - b) * 1.5f;
         btn_b = b - h / 6f;
@@ -60,24 +64,24 @@ public class TextureSlider extends TextureView {
         GLFace f = new GLFace(rb, rt, lb, lt);
         f.setColor(c);
         btn.addFace(f);
-        btn.setTexture(mButtonTexture);
+        btn.setTexture(buttonTexture);
         addShape(btn);
         generate();
-        btnIndexCount = mIndexCount - tempIndexCount;
-        mIndexCount = tempIndexCount;
+        btnIndexCount = indexCount - tempIndexCount;
+        indexCount = tempIndexCount;
     }
 
     public void draw(GL11 gl) {
         super.draw(gl);
-        gl.glBindTexture(GL11.GL_TEXTURE_2D, mButtonTexture.id);
-        gl.glTexCoordPointer(2, GL11.GL_FLOAT, 0, mTextureBuffer);
-        gl.glVertexPointer(3, GL11.GL_FLOAT, 0, mVertexBuffer);
-        gl.glColorPointer(4, GL11.GL_FIXED, 0, mColorBuffer);
-        mIndexBuffer.position(indStart);
-        mColorBuffer.position(colorStart);
-        mVertexBuffer.position(vertStart);
-        mTextureBuffer.position(texStart);
-        gl.glDrawElements(GL11.GL_TRIANGLES, btnIndexCount, GL11.GL_UNSIGNED_SHORT, mIndexBuffer);
+        gl.glBindTexture(GL11.GL_TEXTURE_2D, buttonTexture.id);
+        gl.glTexCoordPointer(2, GL11.GL_FLOAT, 0, textureBuffer);
+        gl.glVertexPointer(3, GL11.GL_FLOAT, 0, vertexBuffer);
+        gl.glColorPointer(4, GL11.GL_FIXED, 0, colorBuffer);
+        indexBuffer.position(indStart);
+        colorBuffer.position(colorStart);
+        vertexBuffer.position(vertStart);
+        textureBuffer.position(texStart);
+        gl.glDrawElements(GL11.GL_TRIANGLES, btnIndexCount, GL11.GL_UNSIGNED_SHORT, indexBuffer);
     }
 
     public void setIndex(int ind) {
@@ -90,7 +94,7 @@ public class TextureSlider extends TextureView {
     }
 
     public void setOnValueChangedListener(OnValueChangedListener listener) {
-        mListener = listener;
+        this.listener = listener;
     }
 
     public void translate(float x, float y, float z) {
@@ -103,11 +107,11 @@ public class TextureSlider extends TextureView {
 
     public boolean handleActionDown(Vec2 p) {
         if (p.x > btn_l && p.x < btn_r && p.y > btn_b && p.y < btn_t) {
-            pressed = true;
+            setPressed(true);
             prevTouch = p;
             return true;
         } else if (touchHit(p)) {
-            pressed = true;
+            setPressed(true);
             prevTouch = p;
             float diff = p.x - btn_l;
             translateButton(diff);
@@ -131,8 +135,8 @@ public class TextureSlider extends TextureView {
 
     private void checkNewInd() {
         int newInd = getNewIndex();
-        if (mListener != null && newInd != prevInd) {
-            mListener.onValueChanged(values.get(newInd));
+        if (listener != null && newInd != prevInd) {
+            listener.onValueChanged(values.get(newInd));
             prevInd = newInd;
         }
     }
@@ -158,8 +162,8 @@ public class TextureSlider extends TextureView {
         }
         btn_l += x;
         btn_r += x;
-        for (int i = vertListStart; i < mVertexList.size(); i += 1) {
-            mVertexList.get(i).translate(mVertexBuffer, x, 0f, 0f);
+        for (int i = vertListStart; i < vertexList.size(); i += 1) {
+            vertexList.get(i).translate(vertexBuffer, x, 0f, 0f);
         }
     }
 
@@ -172,7 +176,7 @@ public class TextureSlider extends TextureView {
         if (pressed) {
             snapToIndex();
             prevTouch = null;
-            pressed = false;
+            setPressed(false);
             return true;
         }
         return false;

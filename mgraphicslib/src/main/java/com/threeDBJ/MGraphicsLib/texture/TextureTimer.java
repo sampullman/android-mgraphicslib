@@ -4,10 +4,10 @@ import android.os.Handler;
 
 public class TextureTimer extends TextureTextView {
 
-    int time = 0;
-    public boolean started = false, paused = false;
-    Handler mHandler = new Handler();
-    char[] timeChars = {'0', '0', ':', '0', '0', ':', '0', '0'};
+    private int time = 0;
+    private boolean started = false, paused = false;
+    private Handler handler = new Handler();
+    private char[] timeChars = {'0', '0', ':', '0', '0', ':', '0', '0'};
 
     public TextureTimer(TextureFont font) {
         super(font);
@@ -35,14 +35,14 @@ public class TextureTimer extends TextureTextView {
         if (!started) {
             started = true;
             setText(formatTime());
-            mHandler.postDelayed(timerEvent, 1000);
+            handler.postDelayed(timerEvent, 1000);
         }
     }
 
     public void stop() {
         if (started) {
             started = false;
-            mHandler.removeCallbacks(timerEvent);
+            handler.removeCallbacks(timerEvent);
         }
     }
 
@@ -73,7 +73,7 @@ public class TextureTimer extends TextureTextView {
             time += 1;
             setText(formatTime());
             if (started) {
-                mHandler.postDelayed(timerEvent, 1000);
+                handler.postDelayed(timerEvent, 1000);
             }
         }
     };

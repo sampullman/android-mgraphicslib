@@ -5,8 +5,8 @@ import com.threeDBJ.MGraphicsLib.math.Vec3;
 
 public class ArcBall {
 
-    Vec3 start, end;
-    float adjustWidth, adjustHeight, halfRat;
+    private Vec3 start, end;
+    private float adjustWidth, adjustHeight, halfRat;
 
     public ArcBall() {
         this(0, 0);

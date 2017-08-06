@@ -9,10 +9,10 @@ import java.util.ArrayList;
 
 public class GLFace {
 
-    ArrayList<GLVertex> vertexList = new ArrayList<>();
-    public GLColor mColor;
+    private ArrayList<GLVertex> vertexList = new ArrayList<>();
+    private GLColor color;
     // These vectors are normalized
-    public Vec3 normal;
+    private Vec3 normal;
     public Texture texture;
 
     public GLFace() {
@@ -63,7 +63,7 @@ public class GLFace {
 	} else {
 	    GLVertex vertex = vertexList.get(last);
 	    // only need to do this if the color has never been set
-	    if (mColor == null) {
+	    if (color == null) {
 		while (vertex.color != null) {
 		    vertexList.add(0, vertex);
 		    vertexList.remove(last + 1);
@@ -73,7 +73,7 @@ public class GLFace {
 	    vertex.color = c;
 	}
 	*/
-        mColor = c;
+        color = c;
     }
 
     public GLColor getColor() {
@@ -84,7 +84,7 @@ public class GLFace {
         for (GLVertex v : vertexList) {
             v.color = c;
         }
-        mColor = c;
+        color = c;
     }
 
     public int getIndexCount() {
@@ -92,21 +92,14 @@ public class GLFace {
     }
 
     public void putIndices(ShortBuffer buffer) {
-        GLVertex v;
-        v = vertexList.get(1);
-        buffer.put(v.index);
-        v = vertexList.get(0);
-        buffer.put(v.index);
-        v = vertexList.get(2);
-        buffer.put(v.index);
+        buffer.put(vertexList.get(1).index);
+        buffer.put(vertexList.get(0).index);
+        buffer.put(vertexList.get(2).index);
 
         if (vertexList.size() > 3) {
-            v = vertexList.get(3);
-            buffer.put(v.index);
-            v = vertexList.get(1);
-            buffer.put(v.index);
-            v = vertexList.get(2);
-            buffer.put(v.index);
+            buffer.put(vertexList.get(3).index);
+            buffer.put(vertexList.get(1).index);
+            buffer.put(vertexList.get(2).index);
         }
     }
 

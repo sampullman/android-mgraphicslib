@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 abstract class TextureViewAnimation {
 
-    ArrayList<TextureView> mViews = new ArrayList<>();
-    int tick, nTicks;
-    boolean isStarted = false, isFinished = false;
+    ArrayList<TextureView> views = new ArrayList<>();
+    private int tick, nTicks;
+    private boolean isStarted = false, isFinished = false;
 
     /* TODO - Think about implementing real time duration */
     public TextureViewAnimation(int nTicks) {
@@ -14,7 +14,7 @@ abstract class TextureViewAnimation {
     }
 
     public void addView(TextureView view) {
-        mViews.add(view);
+        views.add(view);
     }
 
     public void startAnimation() {
@@ -33,5 +33,7 @@ abstract class TextureViewAnimation {
     public boolean finished() {
         return isFinished;
     }
+
+    public boolean isStarted() { return this.isStarted; }
 
 }

@@ -14,17 +14,15 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.microedition.khronos.opengles.GL11;
 
 public class TextureFont extends Texture {
 
-    ArrayList<TextureLetter> prevText = new ArrayList<TextureLetter>();
-    HashMap<Character, TextureLetter> letters = new HashMap<Character, TextureLetter>();
-    float width, height, worldW, worldH, maxCharW = -1f, maxCharH = -1;
-    GLColor defaultColor = new GLColor(0f, 0f, 0f);
+    HashMap<Character, TextureLetter> letters = new HashMap<>();
+    private float width, height, worldW, worldH, maxCharW = -1f, maxCharH = -1;
+    private GLColor defaultColor = new GLColor(0f, 0f, 0f);
 
     public TextureFont(Context context, int resource, String infoFile) {
         super(resource);
@@ -43,8 +41,8 @@ public class TextureFont extends Texture {
         float adjustH = sizeF / maxCharH;
         float adjustW = sizeF / maxCharW;
         float h;
-        for (int i = 0; i < chars.length; i += 1) {
-            tl = letters.get(new Character(chars[i]));
+        for (Character c : chars) {
+            tl = letters.get(c);
             s.x += tl.w * adjustW;
             h = tl.h * adjustH;
             if (h > s.y) s.y = h;
@@ -62,7 +60,7 @@ public class TextureFont extends Texture {
     }
 
     public void generateText(TextureTextView view, char[] chars,
-                             float x, float y, float z, GLColor c) {
+                             float x, float y, float z, GLColor color) {
         float sizeF = view.textSize / 90f;
         float adjustH = sizeF / maxCharH;
         float adjustW = sizeF / maxCharW;
@@ -71,24 +69,24 @@ public class TextureFont extends Texture {
         GLFace f;
         TextureLetter tl;
         GLVertex v1, v2, v3, v4;
-        int vertCount = view.mVertexList.size(), indCount = 0;
+        int vertCount = view.vertexList.size(), indCount = 0;
         view.fontVerts.clear();
-        FloatBuffer texBuf = view.mTextureBuffer.duplicate();
-        FloatBuffer colorBuf = view.mColorBuffer.duplicate();
-        ShortBuffer indBuf = view.mIndexBuffer.duplicate();
-        FloatBuffer vertBuf = view.mVertexBuffer.duplicate();
+        FloatBuffer texBuf = view.textureBuffer.duplicate();
+        FloatBuffer colorBuf = view.colorBuffer.duplicate();
+        ShortBuffer indBuf = view.indexBuffer.duplicate();
+        FloatBuffer vertBuf = view.vertexBuffer.duplicate();
         indBuf.position(view.indStart);
         colorBuf.position(view.colorStart);
         vertBuf.position(view.vertStart);
         texBuf.position(view.texStart);
         x += view.paddingLeft;
         y += view.paddingBottom;
-        for (int i = 0; i < chars.length; i += 1) {
-            tl = letters.get(new Character(chars[i]));
+        for(Character c: chars) {
+            tl = letters.get(c);
             xr = x + tl.w * adjustW;
             // TODO -- skip first n chars, where each char maps to prevChars
             //if(i >= view.prevText.length || chars[i] != view.prevText[i]) {
-            yb = y + getYOffset(chars[i], tl.h, adjustH);
+            yb = y + getYOffset(c, tl.h, adjustH);
             yt = yb + tl.h * adjustH;
             v1 = new GLVertex(xr, yb, z, vertCount);
             v2 = new GLVertex(xr, yt, z, vertCount + 1);
@@ -100,7 +98,7 @@ public class TextureFont extends Texture {
             view.fontVerts.add(v2);
             view.fontVerts.add(v3);
             view.fontVerts.add(v4);
-            f.setColor(c);
+            f.setColor(color);
             v1.put(vertBuf, colorBuf);
             v2.put(vertBuf, colorBuf);
             v3.put(vertBuf, colorBuf);
@@ -119,10 +117,10 @@ public class TextureFont extends Texture {
             //Log.e("Cube", chars[i]+"");
         }
         view.fontIndexCount = indCount;
-        view.mVertexBuffer = vertBuf;
-        view.mColorBuffer = colorBuf;
-        view.mIndexBuffer = indBuf;
-        view.mTextureBuffer = texBuf;
+        view.vertexBuffer = vertBuf;
+        view.colorBuffer = colorBuf;
+        view.indexBuffer = indBuf;
+        view.textureBuffer = texBuf;
     }
 
     public float getYOffset(char c, float h, float adjustH) {
@@ -194,7 +192,7 @@ public class TextureFont extends Texture {
         TextureLetter(char let, float xl, float xr, float yb, float yt, int w, int h) {
             this.w = (float) w;
             this.h = (float) h;
-            this.let = new Character(let);
+            this.let = let;
             this.xl = xl;
             this.xr = xr;
             this.yb = yb;

@@ -37,7 +37,7 @@ public class TextureView extends GLEnvironment implements Clickable {
         this.t = t;
         this.z = z;
         vertexList.clear();
-        mShapeList.clear();
+        shapeList.clear();
         GLShape surface = new GLShape(this);
         rb = surface.addVertex(r, b, z);
         rt = surface.addVertex(r, t, z);

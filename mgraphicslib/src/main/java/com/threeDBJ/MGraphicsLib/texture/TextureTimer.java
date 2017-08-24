@@ -2,10 +2,16 @@ package com.threeDBJ.MGraphicsLib.texture;
 
 import android.os.Handler;
 
+import static com.threeDBJ.MGraphicsLib.texture.TextureTimer.TimerState.*;
+
 public class TextureTimer extends TextureTextView {
 
+    enum TimerState {
+        OFF, STARTED, PAUSED
+    }
+
     private int time = 0;
-    private boolean started = false, paused = false;
+    private TimerState state = OFF;
     private Handler handler = new Handler();
     private char[] timeChars = {'0', '0', ':', '0', '0', ':', '0', '0'};
 
@@ -21,27 +27,39 @@ public class TextureTimer extends TextureTextView {
         return time;
     }
 
+    public boolean isPaused() {
+        return state == PAUSED;
+    }
+
+    public boolean isStarted() {
+        return state == STARTED;
+    }
+
+    public boolean isOff() {
+        return state == OFF;
+    }
+
     public void pause(boolean pause) {
-        if (pause && !paused) {
-            paused = true;
+        if (pause && !isPaused()) {
+            state = PAUSED;
             stop();
-        } else if (!pause && paused) {
-            paused = false;
+        } else if (!pause && isPaused()) {
+            state = STARTED;
             start();
         }
     }
 
     public void start() {
-        if (!started) {
-            started = true;
+        if (!isStarted()) {
+            state = STARTED;
             setText(formatTime());
             handler.postDelayed(timerEvent, 1000);
         }
     }
 
     public void stop() {
-        if (started) {
-            started = false;
+        if (isStarted()) {
+            state = OFF;
             handler.removeCallbacks(timerEvent);
         }
     }
@@ -72,7 +90,7 @@ public class TextureTimer extends TextureTextView {
         public void run() {
             time += 1;
             setText(formatTime());
-            if (started) {
+            if (isStarted()) {
                 handler.postDelayed(timerEvent, 1000);
             }
         }

@@ -17,13 +17,12 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.microedition.khronos.opengles.GL11;
 
 public abstract class GLEnvironment {
 
-    public ArrayList<GLShape> mShapeList = new ArrayList<>();
+    public ArrayList<GLShape> shapeList = new ArrayList<>();
     public ArrayList<GLVertex> vertexList = new ArrayList<>();
     public Texture texture;
 
@@ -38,13 +37,13 @@ public abstract class GLEnvironment {
     private boolean texturesEnabled = false;
 
     public void clear() {
-        mShapeList.clear();
+        shapeList.clear();
         vertexList.clear();
         indexCount = 0;
     }
 
     public void addShape(GLShape shape) {
-        mShapeList.add(shape);
+        shapeList.add(shape);
         indexCount += shape.getIndexCount();
     }
 
@@ -77,7 +76,7 @@ public abstract class GLEnvironment {
             vertex.put(vertexBuffer, colorBuffer);
         }
 
-        for(GLShape shape : mShapeList) {
+        for(GLShape shape : shapeList) {
             shape.putIndices(indexBuffer);
             shape.putTextures(textureBuffer);
         }
